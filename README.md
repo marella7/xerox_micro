@@ -21,7 +21,7 @@ older than one hour are removed when another PDF is processed.
 
 The form offers an optional **Enhance scanned pages** mode. When selected, the
 app detects pages that contain little or no text and applies margin cropping,
-contrast improvement, median denoising, and sharpening before placing the pages
+gentle contrast improvement and sharpening before placing the pages
 into the A4 layout. Vector and selectable-text PDFs are left unchanged.
 
 Enhancement is lossy and can alter extremely fine or low-quality scan details.

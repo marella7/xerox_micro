@@ -39,9 +39,9 @@ def _is_scanned_page(page: fitz.Page) -> bool:
 
 
 def _enhance_scanned_page(page: fitz.Page) -> bytes:
-    """Render, crop, contrast-enhance, denoise, and sharpen one scanned page."""
+    """Render, crop, improve contrast, and gently sharpen one scanned page."""
     pixmap = page.get_pixmap(
-        matrix=fitz.Matrix(300 / 72, 300 / 72),
+        matrix=fitz.Matrix(180 / 72, 180 / 72),
         alpha=False,
         colorspace=fitz.csRGB,
     )
@@ -64,15 +64,14 @@ def _enhance_scanned_page(page: fitz.Page) -> bytes:
         bottom = min(image.height, content_box[3] + padding)
         image = image.crop((left, top, right, bottom))
 
-    image = ImageOps.autocontrast(image, cutoff=1)
-    image = ImageEnhance.Contrast(image).enhance(1.12)
-    image = image.filter(ImageFilter.MedianFilter(size=3))
+    image = ImageOps.autocontrast(image, cutoff=0.5)
+    image = ImageEnhance.Contrast(image).enhance(1.05)
     image = image.filter(
-        ImageFilter.UnsharpMask(radius=1.2, percent=155, threshold=3)
+        ImageFilter.UnsharpMask(radius=0.8, percent=115, threshold=4)
     )
 
     encoded = BytesIO()
-    image.save(encoded, format="JPEG", quality=94, subsampling=0, optimize=True)
+    image.save(encoded, format="JPEG", quality=92, subsampling=0, optimize=True)
     return encoded.getvalue()
 
 
@@ -102,6 +101,7 @@ def create_student_cut_pdf(
         cell_height = SHEET_HEIGHT / GRID_ROWS
 
         with fitz.open() as output_pdf:
+            enhanced_images: dict[int, bytes] = {}
             for batch_start in range(0, total_pages, 16):
                 front = output_pdf.new_page(
                     width=SHEET_WIDTH,
@@ -121,7 +121,11 @@ def create_student_cut_pdf(
                         (row + 1) * cell_height,
                     )
                     if enhance_scanned and _is_scanned_page(input_pdf[page_number]):
-                        enhanced_image = _enhance_scanned_page(input_pdf[page_number])
+                        if page_number not in enhanced_images:
+                            enhanced_images[page_number] = _enhance_scanned_page(
+                                input_pdf[page_number]
+                            )
+                        enhanced_image = enhanced_images[page_number]
                         front.insert_image(rect, stream=enhanced_image, keep_proportion=True)
                     else:
                         front.show_pdf_page(rect, input_pdf, page_number)
@@ -144,7 +148,11 @@ def create_student_cut_pdf(
                         (row + 1) * cell_height,
                     )
                     if enhance_scanned and _is_scanned_page(input_pdf[page_number]):
-                        enhanced_image = _enhance_scanned_page(input_pdf[page_number])
+                        if page_number not in enhanced_images:
+                            enhanced_images[page_number] = _enhance_scanned_page(
+                                input_pdf[page_number]
+                            )
+                        enhanced_image = enhanced_images[page_number]
                         back.insert_image(rect, stream=enhanced_image, keep_proportion=True)
                     else:
                         back.show_pdf_page(rect, input_pdf, page_number)
