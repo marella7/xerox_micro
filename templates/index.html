@@ -8,8 +8,8 @@
       content="Arrange PDF pages into duplex-ready A4 landscape study cards."
     >
     <title>MARELLA product</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='20261122') }}">
-    <script src="{{ url_for('static', filename='app.js', v='20261122') }}" defer></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='20261122-3') }}">
+    <script src="{{ url_for('static', filename='app.js', v='20261122-3') }}" defer></script>
   </head>
   <body>
     <main class="page-shell">
@@ -25,32 +25,22 @@
         <p class="eyebrow">MARELLA product</p>
         <h1 id="page-title">Choose a PDF option</h1>
         <p class="hero-copy">
-          Merge PDFs or use the Cut 8×8 study-card layout.
+          Select the Cut 8×8 study-card layout to continue.
         </p>
       </section>
 
       <section class="mode-options" id="mode-options" aria-label="Choose PDF option">
-        <button class="mode-card" id="merge-mode" type="button">
-          <span class="mode-icon" aria-hidden="true">M</span>
-          <span class="mode-copy">
-            <strong>Merge PDFs</strong>
-            <span>Add two PDFs and combine them before processing.</span>
-          </span>
-          <span class="mode-arrow" aria-hidden="true">&rarr;</span>
-        </button>
-
         <button class="mode-card" id="cut-mode" type="button">
           <span class="mode-icon" aria-hidden="true">8×8</span>
           <span class="mode-copy">
             <strong>Cut 8×8</strong>
-            <span>Use the existing A4 landscape cut layout.</span>
+            <span>Arrange one PDF into duplex-ready A4 landscape sheets.</span>
           </span>
           <span class="mode-arrow" aria-hidden="true">&rarr;</span>
         </button>
       </section>
 
       <section class="workspace" id="workspace" aria-label="PDF conversion" hidden>
-        <button class="back-button" id="back-button" type="button">&larr; Back to options</button>
         <form id="upload-form">
           <label class="drop-zone" id="drop-zone" for="pdf-file">
             <span class="upload-icon" aria-hidden="true">
@@ -73,22 +63,6 @@
             <button class="remove-file" id="remove-file" type="button" aria-label="Remove selected file">
               &times;
             </button>
-          </div>
-
-          <label class="enhancement-option" for="merge-pdfs">
-            <input id="merge-pdfs" name="merge_pdfs" type="checkbox" value="1">
-            <span>
-              <strong>Merge PDFs</strong>
-              <span>Add a second PDF after this PDF before creating the cut-ready sheets.</span>
-            </span>
-          </label>
-
-          <div class="second-file" id="second-file" hidden>
-            <label class="second-file-drop" for="second-pdf-file">
-              <strong id="second-file-label">Choose the second PDF</strong>
-              <span>PDF only · Up to 100 MB</span>
-              <input id="second-pdf-file" name="second_file" type="file" accept="application/pdf,.pdf">
-            </label>
           </div>
 
           <div class="layout-card">

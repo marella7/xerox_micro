@@ -108,7 +108,7 @@ input {
 .mode-options {
   width: min(100%, 660px);
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 16px;
   margin: 0 auto 42px;
 }
@@ -166,21 +166,6 @@ input {
 .mode-arrow {
   color: var(--blue);
   font-size: 18px;
-}
-
-.back-button {
-  margin-bottom: 14px;
-  padding: 6px 0;
-  border: 0;
-  color: var(--muted);
-  background: transparent;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.back-button:hover {
-  color: var(--blue);
 }
 
 .workspace {
@@ -400,42 +385,6 @@ input {
   color: var(--muted);
   font-size: 11px;
   line-height: 1.45;
-}
-
-.second-file {
-  margin-top: 8px;
-}
-
-.second-file-drop {
-  min-height: 64px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 12px 14px;
-  border: 1.5px dashed #cbd0e4;
-  border-radius: 11px;
-  background: #fbfbff;
-  cursor: pointer;
-}
-
-.second-file-drop strong {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12px;
-}
-
-.second-file-drop span {
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 11px;
-}
-
-.second-file-drop input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
 }
 
 .primary-button,
@@ -681,10 +630,6 @@ progress::-moz-progress-bar {
 
   .hero-copy {
     font-size: 14px;
-  }
-
-  .mode-options {
-    grid-template-columns: 1fr;
   }
 
   .mode-card {

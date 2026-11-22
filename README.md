@@ -17,10 +17,6 @@ Open <http://127.0.0.1:5000> in your browser. Upload a PDF up to 100 MB, preview
 the first front/back pair, and download the generated PDF. Temporary job files
 older than one hour are removed when another PDF is processed.
 
-To combine two PDFs, enable **Merge PDFs** and choose a second PDF. The first
-PDF's pages are followed by the second PDF's pages before the cut-mode layout is
-created.
-
 ## Scanned-page enhancement
 
 The form offers an optional **Enhance scanned pages** mode. When selected, the

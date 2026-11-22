@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pymupdf as fitz
 
-from app import PdfInputError, app, create_student_cut_pdf, merge_pdf_inputs
+from app import PdfInputError, app, create_student_cut_pdf
 
 
 class StudentCutModeTests(unittest.TestCase):
@@ -111,26 +111,6 @@ class StudentCutModeTests(unittest.TestCase):
             with self.assertRaises(PdfInputError):
                 create_student_cut_pdf(b"not a PDF", output_path)
 
-    def test_merge_pdf_inputs_keeps_first_then_second_page_order(self):
-        first_data = self.make_source_pdf(3)
-        second_data = self.make_source_pdf(3)
-        merged_data = merge_pdf_inputs([first_data, second_data])
-
-        with fitz.open(stream=merged_data, filetype="pdf") as merged:
-            self.assertEqual(len(merged), 6)
-            labels = [merged[index].get_text().strip() for index in range(6)]
-            self.assertEqual(
-                labels,
-                [
-                    "SOURCE_PAGE_1",
-                    "SOURCE_PAGE_2",
-                    "SOURCE_PAGE_3",
-                    "SOURCE_PAGE_1",
-                    "SOURCE_PAGE_2",
-                    "SOURCE_PAGE_3",
-                ],
-            )
-
     def test_upload_returns_preview_and_downloadable_pdf(self):
         source_data = self.make_source_pdf(2)
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -140,8 +120,10 @@ class StudentCutModeTests(unittest.TestCase):
                 self.assertEqual(client.get("/").status_code, 200)
                 index_response = client.get("/")
                 self.assertIn(b"MARELLA product", index_response.data)
-                self.assertIn(b"Merge PDFs", index_response.data)
+                self.assertIn(b'id="cut-mode"', index_response.data)
                 self.assertIn("Cut 8×8".encode(), index_response.data)
+                self.assertNotIn(b"Merge PDFs", index_response.data)
+                self.assertNotIn(b"second-pdf-file", index_response.data)
                 static_response = client.get("/static/app.js")
                 self.assertEqual(static_response.status_code, 200)
                 static_response.close()
@@ -167,7 +149,7 @@ class StudentCutModeTests(unittest.TestCase):
                     self.assertEqual(len(output), 2)
                 download_response.close()
 
-    def test_upload_can_merge_two_pdfs(self):
+    def test_upload_ignores_legacy_merge_fields(self):
         first_data = self.make_source_pdf(2)
         second_data = self.make_source_pdf(3)
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -176,19 +158,15 @@ class StudentCutModeTests(unittest.TestCase):
                     "/process",
                     data={
                         "merge_pdfs": "1",
-                        "file": (BytesIO(first_data), "units-1-3.pdf"),
-                        "second_file": (BytesIO(second_data), "units-4-6.pdf"),
+                        "file": (BytesIO(first_data), "study.pdf"),
+                        "second_file": (BytesIO(second_data), "ignored.pdf"),
                     },
                     content_type="multipart/form-data",
                 )
 
                 self.assertEqual(response.status_code, 200)
                 response_data = response.get_json()
-                self.assertEqual(response_data["total_input_pages"], 5)
-                download_response = app.test_client().get(response_data["download_url"])
-                with fitz.open(stream=download_response.data, filetype="pdf") as output:
-                    self.assertEqual(len(output), 2)
-                download_response.close()
+                self.assertEqual(response_data["total_input_pages"], 2)
 
     def test_enhanced_scanned_output_contains_processed_jpeg_images(self):
         with fitz.open() as source:

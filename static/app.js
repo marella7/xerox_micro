@@ -1,9 +1,5 @@
 const form = document.querySelector("#upload-form");
 const fileInput = document.querySelector("#pdf-file");
-const mergeCheckbox = document.querySelector("#merge-pdfs");
-const secondFileContainer = document.querySelector("#second-file");
-const secondFileInput = document.querySelector("#second-pdf-file");
-const secondFileLabel = document.querySelector("#second-file-label");
 const dropZone = document.querySelector("#drop-zone");
 const selectedFile = document.querySelector("#selected-file");
 const fileName = document.querySelector("#file-name");
@@ -21,46 +17,17 @@ const frontPreview = document.querySelector("#front-preview");
 const backPreview = document.querySelector("#back-preview");
 const downloadLink = document.querySelector("#download-link");
 const modeOptions = document.querySelector("#mode-options");
-const mergeModeButton = document.querySelector("#merge-mode");
 const cutModeButton = document.querySelector("#cut-mode");
 const workspace = document.querySelector("#workspace");
-const backButton = document.querySelector("#back-button");
 const hero = document.querySelector(".hero");
-const mergeOption = mergeCheckbox?.closest(".enhancement-option");
 
 const maxFileSize = 100 * 1024 * 1024;
 const bytesInMegabyte = 1024 * 1024;
 
-function openMode(mode) {
+cutModeButton.addEventListener("click", () => {
   modeOptions.hidden = true;
   workspace.hidden = false;
   hero.hidden = true;
-
-  if (mode === "merge") {
-    mergeCheckbox.checked = true;
-    if (mergeOption) mergeOption.hidden = true;
-    secondFileContainer.hidden = false;
-  } else {
-    mergeCheckbox.checked = false;
-    if (mergeOption) mergeOption.hidden = true;
-    secondFileContainer.hidden = true;
-  }
-}
-
-mergeModeButton.addEventListener("click", () => openMode("merge"));
-cutModeButton.addEventListener("click", () => openMode("cut"));
-
-backButton.addEventListener("click", () => {
-  modeOptions.hidden = false;
-  workspace.hidden = true;
-  hero.hidden = false;
-  mergeCheckbox.checked = false;
-  if (mergeOption) mergeOption.hidden = false;
-  secondFileContainer.hidden = true;
-  secondFileInput.value = "";
-  secondFileLabel.textContent = "Choose the second PDF";
-  statusMessage.textContent = "";
-  resultPanel.hidden = true;
 });
 
 function formatFileSize(bytes) {
@@ -97,36 +64,6 @@ function selectFile(file) {
 }
 
 fileInput.addEventListener("change", () => selectFile(fileInput.files[0]));
-
-mergeCheckbox.addEventListener("change", () => {
-  secondFileContainer.hidden = !mergeCheckbox.checked;
-  if (!mergeCheckbox.checked) {
-    secondFileInput.value = "";
-    secondFileLabel.textContent = "Choose the second PDF";
-  }
-});
-
-secondFileInput.addEventListener("change", () => {
-  const file = secondFileInput.files[0];
-  statusMessage.textContent = "";
-  if (!file) {
-    secondFileLabel.textContent = "Choose the second PDF";
-    return;
-  }
-  if (!file.name.toLowerCase().endsWith(".pdf")) {
-    secondFileInput.value = "";
-    secondFileLabel.textContent = "Choose the second PDF";
-    statusMessage.textContent = "Choose a PDF file.";
-    return;
-  }
-  if (file.size > maxFileSize) {
-    secondFileInput.value = "";
-    secondFileLabel.textContent = "Choose the second PDF";
-    statusMessage.textContent = "Each PDF must be 100 MB or smaller.";
-    return;
-  }
-  secondFileLabel.textContent = file.name;
-});
 
 removeFileButton.addEventListener("click", () => {
   selectFile(null);
@@ -169,11 +106,6 @@ form.addEventListener("submit", (event) => {
     statusMessage.textContent = "Choose a PDF file to continue.";
     return;
   }
-  if (mergeCheckbox.checked && !secondFileInput.files[0]) {
-    statusMessage.textContent = "Choose the second PDF to merge.";
-    return;
-  }
-
   const request = new XMLHttpRequest();
   request.open("POST", "/process");
   request.responseType = "json";
