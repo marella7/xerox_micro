@@ -105,6 +105,84 @@ input {
   line-height: 1.6;
 }
 
+.mode-options {
+  width: min(100%, 660px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0 auto 42px;
+}
+
+.mode-card {
+  min-height: 150px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 12px 35px rgba(34, 43, 82, 0.06);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+.mode-card:hover {
+  border-color: #afb5f6;
+  box-shadow: 0 16px 40px rgba(70, 79, 235, 0.12);
+  transform: translateY(-2px);
+}
+
+.mode-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--blue);
+  background: var(--blue-soft);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.mode-copy {
+  display: grid;
+  gap: 7px;
+}
+
+.mode-copy strong {
+  font-size: 15px;
+}
+
+.mode-copy span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.mode-arrow {
+  color: var(--blue);
+  font-size: 18px;
+}
+
+.back-button {
+  margin-bottom: 14px;
+  padding: 6px 0;
+  border: 0;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.back-button:hover {
+  color: var(--blue);
+}
+
 .workspace {
   width: min(100%, 660px);
   margin: 0 auto;
@@ -322,6 +400,42 @@ input {
   color: var(--muted);
   font-size: 11px;
   line-height: 1.45;
+}
+
+.second-file {
+  margin-top: 8px;
+}
+
+.second-file-drop {
+  min-height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px 14px;
+  border: 1.5px dashed #cbd0e4;
+  border-radius: 11px;
+  background: #fbfbff;
+  cursor: pointer;
+}
+
+.second-file-drop strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.second-file-drop span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.second-file-drop input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
 }
 
 .primary-button,
@@ -567,6 +681,14 @@ progress::-moz-progress-bar {
 
   .hero-copy {
     font-size: 14px;
+  }
+
+  .mode-options {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-card {
+    min-height: 126px;
   }
 
   .workspace {

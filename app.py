@@ -23,7 +23,7 @@ FRONT_PAGE_OFFSETS = (0, 2, 4, 6, 8, 10, 12, 14)
 BACK_PAGE_OFFSETS = (7, 5, 3, 1, 15, 13, 11, 9)
 
 app = Flask(__name__)
-app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_BYTES + 1024 * 1024
+app.config["MAX_CONTENT_LENGTH"] = (MAX_UPLOAD_BYTES * 2) + 1024 * 1024
 app.config["JOBS_DIR"] = Path(app.instance_path) / "student_cut_jobs"
 app.config["JOBS_DIR"].mkdir(parents=True, exist_ok=True)
 
@@ -32,6 +32,27 @@ logging.basicConfig(level=logging.INFO)
 
 class PdfInputError(ValueError):
     """Raised when an uploaded file cannot be processed as a supported PDF."""
+
+
+def merge_pdf_inputs(input_data: list[bytes]) -> bytes:
+    """Merge PDFs in the order supplied and validate each PDF."""
+    with fitz.open() as merged_pdf:
+        for pdf_data in input_data:
+            if not pdf_data:
+                raise PdfInputError("An uploaded PDF is empty.")
+            try:
+                source_pdf = fitz.open(stream=pdf_data, filetype="pdf")
+            except (fitz.FileDataError, fitz.EmptyFileError) as exc:
+                raise PdfInputError("An uploaded file is not a valid PDF.") from exc
+
+            with source_pdf:
+                if source_pdf.needs_pass:
+                    raise PdfInputError("Password-protected PDFs are not supported.")
+                if len(source_pdf) == 0:
+                    raise PdfInputError("One of the PDFs does not contain any pages.")
+                merged_pdf.insert_pdf(source_pdf)
+
+        return merged_pdf.tobytes()
 
 
 def _is_scanned_page(page: fitz.Page) -> bool:
@@ -197,9 +218,22 @@ def process_pdf():
         return jsonify(error="Choose a PDF file to continue."), 400
 
     enhance_scanned = request.form.get("enhance_scanned") == "1"
+    merge_pdfs = request.form.get("merge_pdfs") == "1"
     input_data = uploaded_file.stream.read(MAX_UPLOAD_BYTES + 1)
     if len(input_data) > MAX_UPLOAD_BYTES:
         return jsonify(error="The PDF must be 100 MB or smaller."), 413
+
+    if merge_pdfs:
+        second_file = request.files.get("second_file")
+        if second_file is None or not second_file.filename:
+            return jsonify(error="Choose the second PDF to merge."), 400
+        second_data = second_file.stream.read(MAX_UPLOAD_BYTES + 1)
+        if len(second_data) > MAX_UPLOAD_BYTES:
+            return jsonify(error="The PDF must be 100 MB or smaller."), 413
+        try:
+            input_data = merge_pdf_inputs([input_data, second_data])
+        except PdfInputError as exc:
+            return jsonify(error=str(exc)), 400
 
     _cleanup_expired_jobs()
     job_id = uuid.uuid4().hex
