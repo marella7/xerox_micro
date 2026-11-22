@@ -151,7 +151,9 @@ def process_pdf():
     with fitz.open(output_path) as result_pdf:
         for page_index in range(min(2, len(result_pdf))):
             page = result_pdf[page_index]
-            scale = min(1.5, 1200 / page.rect.width)
+            # Render previews at 300 DPI-equivalent resolution for a clear
+            # on-screen image; this does not rasterize or resize the PDF output.
+            scale = min(300 / 72, 2400 / page.rect.width)
             pixmap = page.get_pixmap(matrix=fitz.Matrix(scale, scale), alpha=False)
             pixmap.save(job_dir / f"preview-{page_index + 1}.png")
 
