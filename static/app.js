@@ -134,8 +134,11 @@ form.addEventListener("submit", (event) => {
     downloadLink.href = response.download_url;
     const duplexSets = Math.ceil(response.total_input_pages / 16);
     const setLabel = duplexSets === 1 ? "duplex set" : "duplex sets";
+    const enhancementLabel = response.enhancement_enabled
+      ? " · scanned-page enhancement enabled"
+      : "";
     resultSummary.textContent =
-      `${response.total_input_pages} input pages · ${response.total_output_pages} PDF pages · ${duplexSets} ${setLabel}`;
+      `${response.total_input_pages} input pages · ${response.total_output_pages} PDF pages · ${duplexSets} ${setLabel}${enhancementLabel}`;
     resultPanel.hidden = false;
     progressBar.value = 100;
     progressValue.textContent = "100%";

@@ -293,6 +293,37 @@ input {
   letter-spacing: 0.08em;
 }
 
+.enhancement-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  cursor: pointer;
+}
+
+.enhancement-option input {
+  margin: 2px 0 0;
+  accent-color: var(--blue);
+}
+
+.enhancement-option > span {
+  display: grid;
+  gap: 4px;
+}
+
+.enhancement-option strong {
+  font-size: 12px;
+}
+
+.enhancement-option > span > span {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
 .primary-button,
 .download-button {
   width: 100%;

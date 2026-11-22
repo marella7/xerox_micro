@@ -17,6 +17,17 @@ Open <http://127.0.0.1:5000> in your browser. Upload a PDF up to 100 MB, preview
 the first front/back pair, and download the generated PDF. Temporary job files
 older than one hour are removed when another PDF is processed.
 
+## Scanned-page enhancement
+
+The form offers an optional **Enhance scanned pages** mode. When selected, the
+app detects pages that contain little or no text and applies margin cropping,
+contrast improvement, median denoising, and sharpening before placing the pages
+into the A4 layout. Vector and selectable-text PDFs are left unchanged.
+
+Enhancement is lossy and can alter extremely fine or low-quality scan details.
+It is intentionally opt-in and does not replace OCR or source-quality
+enhancement. Keep the original PDF for archival use.
+
 ## Page order
 
 Each 16-page batch is placed in row-major order:

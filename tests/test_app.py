@@ -143,6 +143,37 @@ class StudentCutModeTests(unittest.TestCase):
                     self.assertEqual(len(output), 2)
                 download_response.close()
 
+    def test_enhanced_scanned_output_contains_processed_jpeg_images(self):
+        with fitz.open() as source:
+            first = source.new_page(width=300, height=200)
+            first.insert_text((40, 100), "SCANNED_PAGE_1")
+            rendered = first.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
+
+            scanned = fitz.open()
+            scanned_page = scanned.new_page(width=300, height=200)
+            scanned_page.insert_image(
+                scanned_page.rect,
+                stream=rendered.tobytes("png"),
+            )
+            source_data = scanned.tobytes()
+            scanned.close()
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = Path(temp_dir) / "enhanced.pdf"
+            create_student_cut_pdf(
+                source_data,
+                output_path,
+                enhance_scanned=True,
+            )
+
+            with fitz.open(output_path) as result:
+                self.assertEqual(len(result), 2)
+                enhanced_images = sum(
+                    len(result_page.get_images(full=True))
+                    for result_page in result
+                )
+                self.assertGreater(enhanced_images, 0)
+
 
 if __name__ == "__main__":
     unittest.main()
